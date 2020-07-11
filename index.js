@@ -1,5 +1,4 @@
-const Deck = require('./deck.js');
-var newDeck = new Deck('All');
-//--
-newDeck.shuffle();
-console.log(newDeck.draw());
+module.exports = {
+  Deck: require('./src/deck.js'),
+  Card: require('./src/card.js')
+}

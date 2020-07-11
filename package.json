@@ -1,0 +1,24 @@
+{
+  "name": "misako-deck",
+  "version": "0.1.0",
+  "description": "A module that creates a virtual deck with Card objects. ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/devDPLX/nodejs-practice.git"
+  },
+  "keywords": [
+    "misako",
+    "deck",
+    "card"
+  ],
+  "author": "dep1etion",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/devDPLX/nodejs-practice/issues"
+  },
+  "homepage": "https://github.com/devDPLX/nodejs-practice#readme"
+}

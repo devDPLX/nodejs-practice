@@ -1,8 +1,8 @@
 const { Card, validSuites, validNumbers } = require('./card.js');
 
 let Deck = function(fillOption = 'empty', maxCardAmount = 0, aceHigh = false) {
-  let numberOrder = validNumbers;
-  let suiteOrder = validSuites;
+  let numberOrder = [...validNumbers];
+  let suiteOrder = [...validSuites];
   if (aceHigh) {
     let shiftAce = numberOrder.shift();
     numberOrder.push(shiftAce);
@@ -14,19 +14,19 @@ let Deck = function(fillOption = 'empty', maxCardAmount = 0, aceHigh = false) {
       value: function(fillOption) {
         switch (fillOption) {
           case 'All':
-            for (let suite of suiteOrder) {
-              for (let number of numberOrder) {
+            for (let suite of this.suiteOrder) {
+              for (let number of this.numberOrder) {
                 this.add(number, suite);
               }
             }
             break;
           default:
-            if (numberOrder.find(number => number == fillOption)) {
-              for (let suite of suiteOrder) {
+            if (this.numberOrder.find(number => number == fillOption)) {
+              for (let suite of this.suiteOrder) {
                 this.add(fillOption,suite);
               }
-            } else if (suiteOrder.find(suite => suite == fillOption)) {
-              for (let number of numberOrder) {
+            } else if (this.suiteOrder.find(suite => suite == fillOption)) {
+              for (let number of this.numberOrder) {
                 this.add(number,fillOption);
               }
             }
@@ -34,7 +34,7 @@ let Deck = function(fillOption = 'empty', maxCardAmount = 0, aceHigh = false) {
       }
     },
     add: {
-      value: function(cardOrNumber, suite) {
+      value: function(cardOrNumber, suite, position = this.length) {
         if (maxCardAmount > 0 && this.length >= maxCardAmount) {
           throw new RangeError('Cannot add any more cards, the deck is full.');
         }
@@ -43,12 +43,12 @@ let Deck = function(fillOption = 'empty', maxCardAmount = 0, aceHigh = false) {
           if (card.constructor.name !== 'Card') {
             throw new TypeError('Tried to add object that wasn\'t a card.');
           }
-          this.push(card);
+          this.splice(position,0,card);
           return card;
         } else if (typeof cardOrNumber == 'string' || typeof cardOrNumber == 'number') {
           let number = String(cardOrNumber);
           let newCard = new Card(number,suite,aceHigh);
-          this.push(newCard);
+          this.splice(position,0,newCard);
           return newCard;
         } else {
           throw new TypeError('Argument must be a Card or card number.');
@@ -74,20 +74,20 @@ let Deck = function(fillOption = 'empty', maxCardAmount = 0, aceHigh = false) {
         return this.splice(position,1)[0];
       }
     },
-    validNumbers: {
+    numberOrder: {
       value: numberOrder
     },
-    validSuites: {
+    suiteOrder: {
       value: suiteOrder
     },
     isValidSuite: {
       value: function(suite) {
-        return suiteOrder.includes(suite);
+        return this.suiteOrder.includes(suite);
       }
     },
     isValidNumber: {
       value: function(number) {
-        return numberOrder.includes(number);
+        return this.numberOrder.includes(number);
       }
     },
   };
@@ -106,6 +106,7 @@ let Deck = function(fillOption = 'empty', maxCardAmount = 0, aceHigh = false) {
           }
         }
         Object.defineProperties(tempDeck, deckProperties);
+        Object.defineProperties(tempDeck, overwriteProperties);
         return tempDeck;
       }
     },
@@ -114,6 +115,7 @@ let Deck = function(fillOption = 'empty', maxCardAmount = 0, aceHigh = false) {
         let tempDeck = [...this];
         let filtered = tempDeck.filter(filterFunction);
         Object.defineProperties(filtered, deckProperties);
+        Object.defineProperties(tempDeck, overwriteProperties);
         return filtered;
       }
     },
@@ -127,6 +129,7 @@ let Deck = function(fillOption = 'empty', maxCardAmount = 0, aceHigh = false) {
           newDeck = tempDeck.slice(start);
         }
         Object.defineProperties(newDeck, deckProperties);
+        Object.defineProperties(tempDeck, overwriteProperties);
         return newDeck;
       },
     },
@@ -137,9 +140,10 @@ let Deck = function(fillOption = 'empty', maxCardAmount = 0, aceHigh = false) {
           return a.code - b.code;
         });
         this.length = 0;
-        for (let card of tempDeck) {
-          this.push(card);
+        for (let position in tempDeck) {
+          this.splice(position,1,tempDeck[position]);
         }
+        return this;
       }
     }
   }
